@@ -40,16 +40,16 @@
 
     <ion-pane>
         <ion-header-bar class="bar-stable">
-            <i class="icon ion-android-arrow-back backIcon" ng-if="currentState != state.viewList" ng-click="showTaskList()"></i>
+            <i class="icon ion-android-arrow-back backIcon" ng-if="currentState != state.viewList && currentState != state.showInfo " ng-click="showTaskList()"></i>
             <h1 class="title">ToDo List Plus </h1>
-            <i class="icon ion-ios-plus-outline addTaskIcon" ng-if="currentState == state.viewList" ng-click="addNewTask()"></i>
+            <i class="icon ion-ios-plus-outline addTaskIcon" ng-if="currentState == state.viewList || currentState == state.showInfo" ng-click="addNewTask()"></i>
         </ion-header-bar>
 
         <ion-content>
 
             <div class="page" ng-if="currentState == state.viewList">
 
-                <ion-list can-swipe="true" show-delete="false" ng-repeat="task in taskList">
+                <ion-list can-swipe="true" show-delete="false" ng-repeat="task in taskList" ng-if="taskList.length > 0">
                     <ion-item ng-init="tsk = task.data" ng-class="tsk.taskColor" on-swipe-right="markItDone(task)">
                         <div class="task-description">
                             {{tsk.taskDescription}}
@@ -59,6 +59,14 @@
                         <ion-option-button class="button-assertive icon ion-trash-a" ng-click="deleteMyTask(task)"></ion-option-button>
                     </ion-item>
                 </ion-list>
+                <div class="page" ng-if="taskList.length == 0">
+                    <h2>Welcome to To Do List Plus.</h2>
+                    <ul>
+                        <li>Click on top right corner <i class="icon ion-ios-plus-outline"></i> to add new task </li>
+                        <li>Swipe right to left to see more options - Delete and Edit</li>
+                        <li>Swipe left to right to mark that task as Done <i class="icon ion-android-checkmark-circle"></i> </li>
+                    </ul>
+                </div>
             </div>
             <div class="page" ng-if="currentState == state.viewTask">
 

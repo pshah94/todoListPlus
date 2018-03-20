@@ -21,7 +21,8 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
         viewList: 0,
         viewTask: 1,
         createTask: 2,
-        editTask: 3
+        editTask: 3,
+        showInfo: 4
     };
     $scope.colorList = ["#D86C70", "#76C4AE", "#CABD80", "#7CE0F9"];
     var dbSize = 5 * 1024 * 1024; // 5MB
@@ -59,6 +60,7 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
                     console.log($scope.taskList);
 
                     $scope.showTaskList();
+
                 },
                 function(err) {
 
@@ -128,20 +130,25 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
         });
     };
     $scope.showTaskList = function() {
+
         $scope.currentState = $scope.state.viewList;
+
         $scope.$apply();
         console.log($scope.taskList);
     };
-
     $scope.addNewTask = function() {
         $scope.newTask = angular.copy(aTask);
         $scope.currentState = $scope.state.createTask;
-        console.log($scope.newTask);
+
     };
 
     $scope.createNewTask = function() {
         console.log($scope.newTask);
         console.log($scope.taskList);
+        if ($scope.newTask.taskDescription.trim() == "" || $scope.newTask.taskDescription == null) {
+            alert("Input task Description");
+            return;
+        }
         $scope.writeToDb(angular.copy($scope.newTask));
     };
 
