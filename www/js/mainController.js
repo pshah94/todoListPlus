@@ -41,20 +41,17 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
 
         db.readTransaction(function(tx) {
             tx.executeSql("SELECT * FROM todo ", [], function(tx, rs) {
-                    if (rs.rows.length > 0) {
-                        $scope.taskList = [];
-                        for (var i = 0; i < rs.rows.length; i++) {
-                            var obj = {};
-                            obj.id = rs.rows.item(i).ID;
-                            obj.data = JSON.parse(rs.rows.item(i).todoList);
-                            $scope.taskList.push(angular.copy(obj));
-                        }
 
-                        console.log($scope.taskList);
-
-                    } else {
-                        //
+                    $scope.taskList = [];
+                    for (var i = 0; i < rs.rows.length; i++) {
+                        var obj = {};
+                        obj.id = rs.rows.item(i).ID;
+                        obj.data = JSON.parse(rs.rows.item(i).todoList);
+                        $scope.taskList.push(angular.copy(obj));
                     }
+
+                    console.log($scope.taskList);
+
                     $scope.showTaskList();
                 },
                 function(err) {
