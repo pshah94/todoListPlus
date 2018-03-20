@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link rel="manifest" href="manifest.json">
+
+    <!-- un-comment this code to enable service worker
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => console.log('service worker installed'))
+          .catch(err => console.log('Error', err));
+      }
+    </script>-->
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+    <script src="js/maincontroller.js"></script>
+</head>
+
+<body ng-app="myApp" ng-controller="mainController">
+
+    <ion-pane>
+        <ion-header-bar class="bar-stable">
+            <i class="icon ion-android-arrow-back backIcon" ng-if="currentState != state.viewList" ng-click="showTaskList()"></i>
+            <h1 class="title">ToDo List Plus </h1>
+            <i class="icon ion-ios-plus-outline addTaskIcon" ng-if="currentState == state.viewList" ng-click="addNewTask()"></i>
+        </ion-header-bar>
+
+        <ion-content>
+
+            <div class="page" ng-if="currentState == state.viewList">
+
+                <ion-list can-swipe="true" show-delete="false" ng-repeat="task in taskList">
+                    <ion-item ng-init="tsk = task.data" ng-class="tsk.taskColor" on-swipe-right="markItDone(task)">
+                        <div class="task-description">
+                            {{tsk.taskDescription}}
+                            <i class="icon ion-android-checkmark-circle task-done" ng-if="tsk.isDone"></i>
+                        </div>
+                        <ion-option-button class="button-light icon ion-edit" ng-click="editTask(task)"></ion-option-button>
+                        <ion-option-button class="button-assertive icon ion-trash-a" ng-click="deleteMyTask(task)"></ion-option-button>
+                    </ion-item>
+                </ion-list>
+            </div>
+            <div class="page" ng-if="currentState == state.viewTask">
+
+            </div>
+            <div class="page" ng-if="currentState == state.createTask">
+
+                <ion-list>
+                    <ion-item>
+                        <div class="sub-header ">
+                            <h4>Create New To-Do</h4>
+                        </div>
+                    </ion-item>
+                    <ion-item>
+                        <input type="text" ng-model="newTask.taskDescription" placeholder="Description">
+                    </ion-item>
+
+                    <ion-item>
+                        <label class=" item-input item-select">
+                            <div class="input-label"  >
+                                List Color
+                            </div>
+                            <select ng-model="newTask.taskColor" ng-init="newTask.taskColor ='listWhite'">
+                                <option value="listWhite">White</option>
+                                <option value="listBlue">Blue</option>
+                                <option value="listGreen">Green</option>
+                                <option value="listGray">Gray</option>
+                                <option value="listRed">Red</option>
+                        
+                            </select> 
+                                                           
+                        </label>
+
+                    </ion-item>
+                    <ion-item>
+                        <button class="button button-full button-positive" ng-click="createNewTask()">
+                                    Create New Task
+                                  </button>
+                    </ion-item>
+                </ion-list>
+
+            </div>
+            <div class="page" ng-if="currentState == state.editTask">
+
+                <ion-list>
+                    <ion-item>
+                        <div class="sub-header ">
+                            <h4>Edit To-Do</h4>
+                        </div>
+                    </ion-item>
+                    <ion-item>
+                        <input type="text" ng-model="myTask.taskDescription" placeholder="Description">
+                    </ion-item>
+
+                    <ion-item>
+                        <label class=" item-input item-select">
+                            <div class="input-label"  >
+                                List Color
+                            </div>
+                            <select ng-model="myTask.taskColor" >
+                                <option value="listWhite">White</option>
+                                <option value="listBlue">Blue</option>
+                                <option value="listGreen">Green</option>
+                                <option value="listGray">Gray</option>
+                                <option value="listRed">Red</option>
+                        
+                            </select> 
+                                                           
+                        </label>
+
+                    </ion-item>
+                    <ion-item>
+                        <button class="button button-full button-positive" ng-click="updateMyTask()">
+                                    Update Tasks
+                                  </button>
+                    </ion-item>
+                </ion-list>
+
+            </div>
+
+
+        </ion-content>
+    </ion-pane>
+</body>
+
+</html>
