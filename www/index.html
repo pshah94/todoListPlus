@@ -50,7 +50,7 @@
             <div class="page" ng-if="currentState == state.viewList">
 
                 <ion-list can-swipe="true" show-delete="false" ng-repeat="task in taskList" ng-if="taskList.length > 0">
-                    <ion-item ng-init="tsk = task.data" ng-class="tsk.taskColor" on-swipe-right="markItDone(task)">
+                    <ion-item ng-init="tsk = task.data" ng-class="tsk.taskColor" id="id{{task.id}}" on-swipe-right="markItDone(task,this)">
                         <div class="task-description">
                             {{tsk.taskDescription}}
                             <i class="icon ion-android-checkmark-circle task-done" ng-if="tsk.isDone"></i>

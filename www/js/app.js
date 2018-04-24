@@ -162,7 +162,8 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
         $scope.updateTask($scope.myTask, $scope.myTaskId);
 
     };
-    $scope.markItDone = function(task) {
+    $scope.markItDone = function(task, list) {
+        console.log(list);
         var tsk = task.data;
         tsk.isDone = !tsk.isDone;
         $scope.updateTask(tsk, task.id);
