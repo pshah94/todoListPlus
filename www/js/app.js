@@ -3,8 +3,8 @@
 // angular.module is a global place for creating, registering and retrieving Angular modules
 // 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-var app = angular.module('myApp', ['ionic']);
-app.controller("mainController", function($scope, $http, $timeout, $ionicLoading) {
+var app = angular.module('myApp', ['ionic', 'firebase']);
+app.controller("mainController", function($scope, $http, $timeout, $ionicLoading, $firebaseObject) {
     var aTask = {
         taskColor: "",
         taskDescription: "",
@@ -22,7 +22,8 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
         viewTask: 1,
         createTask: 2,
         editTask: 3,
-        showInfo: 4
+        showInfo: 4,
+        login: 5
     };
     $scope.colorList = ["#D86C70", "#76C4AE", "#CABD80", "#7CE0F9"];
     var dbSize = 5 * 1024 * 1024; // 5MB
@@ -105,10 +106,17 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
             });
         });
     };
-    $scope.deleteMyTask = function(task) {
-        var ans = confirm("Are you sure want to delete task : " + task.data.taskDescription + " ?");
+    $scope.deleteMyTask = function(task_guid, task) {
+        var ans = confirm("Are you sure want to delete task : " + task.taskDescription + " ?");
         if (ans) {
-            $scope.deleteTask(task.id);
+            //$scope.deleteTask(task.id);
+            for (var guid in $scope.taskList) {
+                if (guid == task_guid) {
+                    $scope.taskList[guid] = null;
+                }
+            }
+            $scope.saveToFirebase();
+            $scope.showTaskList();
         }
     }
     $scope.deleteTask = function(id) {
@@ -132,8 +140,8 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
     $scope.showTaskList = function() {
 
         $scope.currentState = $scope.state.viewList;
+        $scope.totalTasks = Object.keys($scope.taskList).length - 3; //object already has 3 keys
 
-        $scope.$apply();
         console.log($scope.taskList);
     };
     $scope.addNewTask = function() {
@@ -149,29 +157,84 @@ app.controller("mainController", function($scope, $http, $timeout, $ionicLoading
             alert("Input task Description");
             return;
         }
-        $scope.writeToDb(angular.copy($scope.newTask));
+        $scope.taskList[uuid.v4()] = angular.copy($scope.newTask);
+        $scope.saveToFirebase();
+        $scope.showTaskList();
+
+        //$scope.writeToDb(angular.copy($scope.newTask));
     };
 
     $scope.editTask = function(task) {
-        $scope.myTask = task.data;
-        $scope.myTaskId = task.id;
+        $scope.myTask = task;
+        // $scope.myTaskId = task.id;
         $scope.currentState = $scope.state.editTask;
     };
 
     $scope.updateMyTask = function() {
-        $scope.updateTask($scope.myTask, $scope.myTaskId);
+        // $scope.updateTask($scope.myTask, $scope.myTaskId);
+        $scope.saveToFirebase();
+        $scope.showTaskList();
 
     };
-    $scope.markItDone = function(task, list) {
-        console.log(list);
-        var tsk = task.data;
-        tsk.isDone = !tsk.isDone;
-        $scope.updateTask(tsk, task.id);
+    $scope.markItDone = function(task) {
+        task.isDone = !task.isDone;
+        $scope.saveToFirebase();
     };
+
+    /* Login Register related */
+    $scope.login = {
+        username: "",
+        password: "",
+        keepMeLoggedIn: false
+    };
+
+    $scope.loginPage = 1;
+    $scope.loginUser = function() {
+        if ($scope.login.username.trim() == "" || $scope.login.password == "") {
+            alert("Enter phone number as username and password");
+            return;
+        }
+        $scope.initializeFirebase();
+
+    }
+    $scope.logoutUser = function() {
+
+        localStorage.removeItem("sMD5");
+        $scope.currentState = $scope.state.login;
+    }
+
+
+    /*  Making connection and other related to Firbase  */
+    $scope.initializeFirebase = function() {
+
+        if ($scope.sKey == null) {
+            var sMd5 = CryptoJS.MD5($scope.login.username + $scope.login.password + "topSecret");
+            if ($scope.login.keepMeLoggedIn) {
+                localStorage.setItem("sMD5", sMd5);
+            }
+
+            $scope.sKey = sMd5
+        }
+
+        var ref = new Firebase("https://march20-bbce5.firebaseio.com/majorAssignmentProject/" + $scope.sKey + "/data/");
+        $scope.taskList = $firebaseObject(ref);
+
+        $scope.showTaskList();
+    }
+    $scope.saveToFirebase = function() {
+        $scope.taskList.$save();
+    }
 
     $timeout(function() {
-        $scope.loadTaskList();
+        // $scope.loadTaskList();
         //$scope.addNewTask();
+        $scope.currentState = $scope.state.login;
+        $scope.sKey = localStorage.getItem("sMD5");
+        if ($scope.sKey != null) {
+            $scope.initializeFirebase();
+        }
+
+
     });
 
     /*********************************   ****************************/

@@ -1,10 +1,10 @@
 /* Empty. Add your own CSS if you like */
 
 .addTaskIcon {
-    font-size: 25px;
+    font-size: 30px;
     position: absolute;
     top: 10px;
-    right: 20px;
+    right: 45px;
     cursor: pointer;
 }
 
@@ -51,6 +51,25 @@
     cursor: pointer;
 }
 
+.logoutIcon {
+    font-size: 30px;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
 .bar .title {
     margin: 0 50px;
+}
+
+input {
+    background-color: #ebf1ec;
+    padding: 5px;
+    width: 100%;
+    height: 50px;
+}
+
+.infoSec {
+    padding: 10px;
 }
